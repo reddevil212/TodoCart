@@ -20,7 +20,7 @@ TodoCart is a simple, modern, and extensible Flutter app for managing your daily
 
 1. **Clone the repository:**
 	```sh
-	git clone https://github.com/yourusername/todocart.git
+	git clone https://github.com/reddevil212/TodoCart.git
 	cd todocart
 	```
 2. **Install dependencies:**

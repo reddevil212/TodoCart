@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:todocart/provider/app_preferences_provider.dart';
 import 'package:todocart/provider/tasks_provider.dart';
 import 'package:todocart/provider/theme_provider.dart';
-import 'screens/home_page.dart';
+import 'package:todocart/services/notifications/notifications.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:todocart/screens/app_navigation_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint('dotenv load skipped: $e');
+  }
+  await NotificationService.instance.initialize();
+
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) {
+            final prefs = AppPreferencesProvider();
+            prefs.init();
+            return prefs;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => TasksProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
@@ -19,7 +39,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // 1. Define themes as static constants inside the class
   static final ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
@@ -29,7 +48,7 @@ class MyApp extends StatelessWidget {
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.white,
-      indicatorColor: Colors.blue.withValues(alpha: 0.2),
+      indicatorColor: Colors.blue.withOpacity(0.2),
     ),
   );
 
@@ -43,7 +62,7 @@ class MyApp extends StatelessWidget {
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: const Color(0xFF1E1E1E),
-      indicatorColor: Colors.blue.withValues(alpha: 0.3),
+      indicatorColor: Colors.blue.withOpacity(0.3),
     ),
   );
 
@@ -55,10 +74,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'TodoCart',
       themeMode: themeMode,
-      // 2. Link the themes here
       theme: lightTheme,
       darkTheme: darkTheme,
-      home: const HomePage(),
+      home: const AppNavigationPage(),
     );
   }
 }

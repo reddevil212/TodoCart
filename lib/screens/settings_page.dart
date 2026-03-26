@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todocart/provider/app_preferences_provider.dart';
 import 'package:todocart/provider/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +18,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final appPrefs = Provider.of<AppPreferencesProvider>(context);
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
@@ -77,7 +79,7 @@ class SettingsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
             child: Text(
-              "Notifications (Experimental)",
+              "Notifications",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -87,13 +89,39 @@ class SettingsPage extends StatelessWidget {
           ),
 
           SwitchListTile(
-            value: false,
-            onChanged: (val) {},
+            value: appPrefs.completionNotification,
+            onChanged: (val) {
+              appPrefs.setCompletionNotification(val);
+            },
             secondary: Icon(
               Icons.notifications,
               color: colors.onSurfaceVariant,
             ),
-            title: const Text("Push Notifications"),
+            title: const Text("Completion Notification"),
+          ),
+
+          SwitchListTile(
+            value: appPrefs.showMessages,
+            onChanged: (val) {
+              appPrefs.setShowMessages(val);
+            },
+            secondary: Icon(
+              Icons.message_outlined,
+              color: colors.onSurfaceVariant,
+            ),
+            title: const Text("Show In-App Messages"),
+          ),
+
+          SwitchListTile(
+            value: appPrefs.speakMessages,
+            onChanged: (val) {
+              appPrefs.setSpeakMessages(val);
+            },
+            secondary: Icon(
+              Icons.record_voice_over,
+              color: colors.onSurfaceVariant,
+            ),
+            title: const Text("Voice Feedback"),
           ),
 
           const SizedBox(height: 10),
